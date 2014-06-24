@@ -94,8 +94,6 @@ namespace CodeConverters.Core.Diagnostics
 
             _initialConfiguration.OverallQuotaInMB = _initialConfiguration.Directories.DataSources.Sum(d => d.DirectoryQuotaInMB);
 
-            Trace.Listeners.Add(new DiagnosticMonitorTraceListener());
-
             DiagnosticMonitor.StartWithConnectionString(DiagnosticsConnectionString, _initialConfiguration);
         }
 
