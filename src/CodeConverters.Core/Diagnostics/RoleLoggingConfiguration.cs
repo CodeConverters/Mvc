@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using log4net;
 using Microsoft.WindowsAzure;
@@ -10,7 +9,7 @@ namespace CodeConverters.Core.Diagnostics
 {
     public static class RoleLoggingConfiguration
     {
-        public static readonly TimeSpan ShippingInterval = TimeSpan.FromMinutes(5);
+        public static readonly TimeSpan ShippingInterval = TimeSpan.FromMinutes(2);
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RoleLoggingConfiguration));
 
@@ -19,15 +18,20 @@ namespace CodeConverters.Core.Diagnostics
         public static string DiagnosticsConnectionString { get { return CloudConfigurationManager.GetSetting("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"); } }
         private static DiagnosticMonitorConfiguration _initialConfiguration;
 
-        public static void InitializeWith(string processName, params DirectoryConfiguration[] directories)
+        public static void InitializeWith(string processName, bool useDateRollingAppender, params DirectoryConfiguration[] directories)
         {
             RoleConfiguration.ThrowIfUnavailable();
+
+            var fileAppender = useDateRollingAppender
+                                   ? Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath)
+                                   : Log4NetAppenderFactory.CreateSizeBasedRollingFileAppender(processName, LoggingPath);
+
             var logAppenders = new[]
-            {
-                Log4NetAppenderFactory.CreateTraceAppender(),
-                Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath),
-                Log4NetAppenderFactory.CreateNewRelicAgentAppender()
-            };
+                {
+                    fileAppender,
+                    Log4NetAppenderFactory.CreateNewRelicAgentAppender()
+                };
+
             Log4NetConfiguration.InitialiseLog4Net(logAppenders);
             ConfigureAzureDiagnostics(directories);
 
@@ -38,7 +42,8 @@ namespace CodeConverters.Core.Diagnostics
 
         public static void Initialize(string processName)
         {
-            InitializeWith(processName, Log4NetDirectory);
+            // by default use date rolling
+            InitializeWith(processName, true, Log4NetDirectory);
         }
 
         public static DirectoryConfiguration Log4NetDirectory
