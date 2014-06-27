@@ -4,6 +4,7 @@ using log4net;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using log4net.Appender;
 
 namespace CodeConverters.Core.Diagnostics
 {
@@ -18,15 +19,39 @@ namespace CodeConverters.Core.Diagnostics
         public static string DiagnosticsConnectionString { get { return CloudConfigurationManager.GetSetting("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"); } }
         private static DiagnosticMonitorConfiguration _initialConfiguration;
 
-        public static void InitializeWith(string processName, bool useDateRollingAppender, params DirectoryConfiguration[] directories)
+        public static void Initialize(string processName)
+        {
+            // by default use date rolling
+            InitializeWithDateRolling(processName, Log4NetDirectory);
+        }
+
+        public static void InitializeWithDateRolling(string processName, params DirectoryConfiguration[] directories)
         {
             RoleConfiguration.ThrowIfUnavailable();
 
-            var fileAppender = useDateRollingAppender
-                                   ? Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath)
-                                   : Log4NetAppenderFactory.CreateSizeBasedRollingFileAppender(processName, LoggingPath);
+            var fileAppender = Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath);
 
-            var logAppenders = new[]
+            InitializeWithBaseAppender(processName, fileAppender, directories);
+        }
+
+        /// <summary>
+        /// Initialises logging using a base size based log that is configured to fill up 31 x 10Mb log files before deleting old logs.
+        /// Each time the log file roll overs it appends an incrementing counter onto the end of the filename.
+        /// </summary>
+        /// <param name="processName"></param>
+        /// <param name="directories"></param>
+        public static void InitializeWithSizeRolling(string processName, params DirectoryConfiguration[] directories)
+        {
+            RoleConfiguration.ThrowIfUnavailable();
+
+            var fileAppender = Log4NetAppenderFactory.CreateSizeBasedRollingFileAppender(processName, LoggingPath);
+
+            InitializeWithBaseAppender(processName, fileAppender, directories);
+        }
+
+        private static void InitializeWithBaseAppender(string processName, RollingFileAppender fileAppender, params DirectoryConfiguration[] directories)
+        {
+             var logAppenders = new[]
                 {
                     fileAppender,
                     Log4NetAppenderFactory.CreateNewRelicAgentAppender()
@@ -39,13 +64,7 @@ namespace CodeConverters.Core.Diagnostics
 
             Logger.Info("Initialized Logging for Role: " + processName);
         }
-
-        public static void Initialize(string processName)
-        {
-            // by default use date rolling
-            InitializeWith(processName, true, Log4NetDirectory);
-        }
-
+       
         public static DirectoryConfiguration Log4NetDirectory
         {
             get
