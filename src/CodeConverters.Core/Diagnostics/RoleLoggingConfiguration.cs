@@ -1,16 +1,16 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using log4net;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using log4net.Appender;
 
 namespace CodeConverters.Core.Diagnostics
 {
     public static class RoleLoggingConfiguration
     {
-        public static readonly TimeSpan ShippingInterval = TimeSpan.FromMinutes(5);
+        public static readonly TimeSpan ShippingInterval = TimeSpan.FromMinutes(2);
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RoleLoggingConfiguration));
 
@@ -19,15 +19,54 @@ namespace CodeConverters.Core.Diagnostics
         public static string DiagnosticsConnectionString { get { return CloudConfigurationManager.GetSetting("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"); } }
         private static DiagnosticMonitorConfiguration _initialConfiguration;
 
-        public static void InitializeWith(string processName, params DirectoryConfiguration[] directories)
+        /// <summary>
+        /// Initialise logging using a date based rolling appender by default.
+        /// </summary>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
+        public static void Initialize(string processName)
+        {
+            // by default use date rolling
+            InitializeWithDateRolling(processName, Log4NetDirectory);
+        }
+
+        /// <summary>
+        /// Initialises logging using date based rolling. Each day a new log is created.  NOTE: this will eventually fill your local log folder, and 
+        /// should probably only be used with regular delete->new deployments (ie not upgrade deployments)
+        /// </summary>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
+        /// <param name="directories"></param>
+        public static void InitializeWithDateRolling(string processName, params DirectoryConfiguration[] directories)
         {
             RoleConfiguration.ThrowIfUnavailable();
-            var logAppenders = new[]
-            {
-                Log4NetAppenderFactory.CreateTraceAppender(),
-                Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath),
-                Log4NetAppenderFactory.CreateNewRelicAgentAppender()
-            };
+
+            var fileAppender = Log4NetAppenderFactory.CreateRollingFileAppender(processName, LoggingPath);
+
+            InitializeWithBaseAppender(processName, fileAppender, directories);
+        }
+
+        /// <summary>
+        /// Initialises logging using size based rolling.  The logger is configured to fill up 31 x 10Mb log files before deleting old logs.
+        /// Each time the log file roll overs it appends an incrementing counter onto the end of the filename.
+        /// </summary>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
+        /// <param name="directories"></param>
+        public static void InitializeWithSizeRolling(string processName, params DirectoryConfiguration[] directories)
+        {
+            RoleConfiguration.ThrowIfUnavailable();
+
+            var fileAppender = Log4NetAppenderFactory.CreateSizeBasedRollingFileAppender(processName, LoggingPath);
+
+            InitializeWithBaseAppender(processName, fileAppender, directories);
+        }
+
+        private static void InitializeWithBaseAppender(string processName, RollingFileAppender fileAppender, params DirectoryConfiguration[] directories)
+        {
+             var logAppenders = new[]
+                {
+                    fileAppender,
+                    Log4NetAppenderFactory.CreateNewRelicAgentAppender()
+                };
+
             Log4NetConfiguration.InitialiseLog4Net(logAppenders);
             ConfigureAzureDiagnostics(directories);
 
@@ -35,12 +74,7 @@ namespace CodeConverters.Core.Diagnostics
 
             Logger.Info("Initialized Logging for Role: " + processName);
         }
-
-        public static void Initialize(string processName)
-        {
-            InitializeWith(processName, Log4NetDirectory);
-        }
-
+       
         public static DirectoryConfiguration Log4NetDirectory
         {
             get
