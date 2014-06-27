@@ -19,12 +19,22 @@ namespace CodeConverters.Core.Diagnostics
         public static string DiagnosticsConnectionString { get { return CloudConfigurationManager.GetSetting("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"); } }
         private static DiagnosticMonitorConfiguration _initialConfiguration;
 
+        /// <summary>
+        /// Initialise logging using a date based rolling appender by default.
+        /// </summary>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
         public static void Initialize(string processName)
         {
             // by default use date rolling
             InitializeWithDateRolling(processName, Log4NetDirectory);
         }
 
+        /// <summary>
+        /// Initialises logging using date based rolling. Each day a new log is created.  NOTE: this will eventually fill your local log folder, and 
+        /// should probably only be used with regular delete->new deployments (ie not upgrade deployments)
+        /// </summary>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
+        /// <param name="directories"></param>
         public static void InitializeWithDateRolling(string processName, params DirectoryConfiguration[] directories)
         {
             RoleConfiguration.ThrowIfUnavailable();
@@ -35,10 +45,10 @@ namespace CodeConverters.Core.Diagnostics
         }
 
         /// <summary>
-        /// Initialises logging using a base size based log that is configured to fill up 31 x 10Mb log files before deleting old logs.
+        /// Initialises logging using size based rolling.  The logger is configured to fill up 31 x 10Mb log files before deleting old logs.
         /// Each time the log file roll overs it appends an incrementing counter onto the end of the filename.
         /// </summary>
-        /// <param name="processName"></param>
+        /// <param name="processName">custom process name to use - this is incorporated into the log filename</param>
         /// <param name="directories"></param>
         public static void InitializeWithSizeRolling(string processName, params DirectoryConfiguration[] directories)
         {
