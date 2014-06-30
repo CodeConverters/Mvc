@@ -23,35 +23,17 @@ namespace CodeConverters.Core.Diagnostics
             return tracer;
         }
 
-        public static RollingFileAppender CreateRollingFileAppender(string processName, string loggingPath)
-        {
-            var fileAppender = new RollingFileAppender
-            {
-                File = Path.Combine(loggingPath, processName + ".log"),
-                PreserveLogFileNameExtension = true,
-                AppendToFile = true,
-                RollingStyle = RollingFileAppender.RollingMode.Composite,
-                MaxSizeRollBackups = 30,
-                MaxFileSize = TenMb,
-                DatePattern = ".yyyy-MM-dd",
-                LockingModel = new FileAppender.MinimalLock(),
-                StaticLogFileName = false,
-                Layout = PatternLayout,
-                ImmediateFlush = true
-            };
-            fileAppender.ActivateOptions();
-            return fileAppender;
-        }
-
         /// <summary>
         /// Creates a size based rolling file appender that is configured to fill up 31 x 10Mb log files before deleting old logs.
         /// Each time the log file roll overs it appends an incrementing counter onto the end of the filename.
         /// </summary>
         /// <param name="processName"></param>
         /// <param name="loggingPath"></param>
+        /// <param name="desiredLoggingLevel">Log threshold level to use, defaults to ALL if not supplied.</param>
         /// <returns></returns>
-        public static RollingFileAppender CreateSizeBasedRollingFileAppender(string processName, string loggingPath)
+        public static RollingFileAppender CreateRollingFileAppender(string processName, string loggingPath, Level desiredLoggingLevel = null)
         {
+            var levelToUse = desiredLoggingLevel ?? Level.All;
             var fileAppender = new RollingFileAppender
             {
                 File = Path.Combine(loggingPath, processName + ".log"),
@@ -59,6 +41,7 @@ namespace CodeConverters.Core.Diagnostics
                 ImmediateFlush = true,
                 Layout = PatternLayout,
                 LockingModel = new FileAppender.MinimalLock(),
+                Threshold = levelToUse,
                 // use size base options so log4net will auto remove old logs
                 RollingStyle = RollingFileAppender.RollingMode.Size,
                 MaxSizeRollBackups = 30, // gives us 31 files - the original plus 30 backups.  multiply that by 10Mb then we need 310Mb of storage
