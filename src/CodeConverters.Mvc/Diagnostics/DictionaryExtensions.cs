@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace CodeConverters.Mvc.Diagnostics
 {
-    internal static class FormExtensions
+    public static class DictionaryExtensions
     {
-        internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc)
+        public static Dictionary<string, string> ToDictionary(this NameValueCollection nvc)
         {
             return nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
         }
 
-        internal static string ToLogFormat(this IDictionary<string, string> dictionary)
+        public static string ToLogFormat(this IDictionary<string, string> dictionary)
         {
             return string.Join(",", dictionary.Select(d => string.Format("{0}:{1}", d.Key, d.Value)));
         }
@@ -23,7 +23,7 @@ namespace CodeConverters.Mvc.Diagnostics
         /// </summary>
         /// <param name="nvc"></param>
         /// <returns></returns>
-        internal static IDictionary<string, string> Scrub(this NameValueCollection nvc)
+        public static IDictionary<string, string> Scrub(this NameValueCollection nvc)
         {
             return Scrub(nvc.ToDictionary(), LoggingConfig.DefaultScrubParams);
         }
@@ -34,7 +34,7 @@ namespace CodeConverters.Mvc.Diagnostics
         /// </summary>
         /// <param name="dict"></param>
         /// <returns></returns>
-        internal static IDictionary<string, string> Scrub(this IDictionary<string, string> dict)
+        public static IDictionary<string, string> Scrub(this IDictionary<string, string> dict)
         {
             return Scrub(dict, LoggingConfig.DefaultScrubParams);
         }
@@ -46,7 +46,7 @@ namespace CodeConverters.Mvc.Diagnostics
         /// <param name="dict"></param>
         /// <param name="scrubParams"></param>
         /// <returns></returns>
-        internal static IDictionary<string, string> Scrub(this IDictionary<string, string> dict, string[] scrubParams)
+        public static IDictionary<string, string> Scrub(this IDictionary<string, string> dict, string[] scrubParams)
         {
             if (dict == null || !dict.Any())
                 return dict;
