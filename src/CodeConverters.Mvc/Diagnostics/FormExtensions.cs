@@ -7,13 +7,6 @@ namespace CodeConverters.Mvc.Diagnostics
 {
     internal static class FormExtensions
     {
-        public static string[] DefaultScrubParams =
-        {
-            "password", "password_confirmation", "confirm_password",
-            "secret", "secret_token",
-            "creditcard", "credit_card", "credit_card_number", "card_number", "ccnum", "cc_number"
-        };
-
         internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc)
         {
             return nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
@@ -32,7 +25,7 @@ namespace CodeConverters.Mvc.Diagnostics
         /// <returns></returns>
         internal static IDictionary<string, string> Scrub(this NameValueCollection nvc)
         {
-            return Scrub(nvc.ToDictionary(), DefaultScrubParams);
+            return Scrub(nvc.ToDictionary(), LoggingConfig.DefaultScrubParams);
         }
 
         /// <summary>
@@ -43,7 +36,7 @@ namespace CodeConverters.Mvc.Diagnostics
         /// <returns></returns>
         internal static IDictionary<string, string> Scrub(this IDictionary<string, string> dict)
         {
-            return Scrub(dict, DefaultScrubParams);
+            return Scrub(dict, LoggingConfig.DefaultScrubParams);
         }
 
         /// <summary>
