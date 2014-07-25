@@ -106,7 +106,7 @@
     <Compile Include="Auth\CustomAuthorizeAttribute.cs" />
     <Compile Include="Auth\CustomClaimTypes.cs" />
     <Compile Include="Auth\FormAuthCookieManager.cs" />
-    <Compile Include="Diagnostics\FormExtensions.cs" />
+    <Compile Include="Diagnostics\DictionaryExtensions.cs" />
     <Compile Include="Diagnostics\HeartBeater.cs" />
     <Compile Include="Diagnostics\IHeartBeater.cs" />
     <Compile Include="Diagnostics\LogAttribute.cs" />
