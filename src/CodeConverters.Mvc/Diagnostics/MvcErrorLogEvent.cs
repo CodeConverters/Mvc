@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.Mvc;
+using CodeConverters.Core.Diagnostics;
 
 namespace CodeConverters.Mvc.Diagnostics
 {
