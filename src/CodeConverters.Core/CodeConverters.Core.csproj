@@ -53,8 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\DictionaryExtensions.cs" />
     <Compile Include="Diagnostics\Log4NetAppenderFactory.cs" />
     <Compile Include="Diagnostics\Log4NetConfiguration.cs" />
+    <Compile Include="Diagnostics\LoggingConfig.cs" />
     <Compile Include="Diagnostics\NewRelicAgentErrorAppender.cs" />
     <Compile Include="Diagnostics\RoleConfiguration.cs" />
     <Compile Include="Diagnostics\RoleLoggingConfiguration.cs" />

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using CodeConverters.Mvc.Diagnostics;
+using CodeConverters.Core.Diagnostics;
 using Xunit;
 
 namespace CodeConverters.MvcTests.Diagnostics

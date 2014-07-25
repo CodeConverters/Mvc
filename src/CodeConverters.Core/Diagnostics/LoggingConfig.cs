@@ -1,4 +1,4 @@
-namespace CodeConverters.Mvc.Diagnostics
+﻿namespace CodeConverters.Core.Diagnostics
 {
     public static class LoggingConfig
     {

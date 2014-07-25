@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace CodeConverters.Mvc.Diagnostics
+namespace CodeConverters.Core.Diagnostics
 {
     public static class DictionaryExtensions
     {
@@ -68,4 +68,5 @@ namespace CodeConverters.Mvc.Diagnostics
             return dict;
         }
     }
+
 }
