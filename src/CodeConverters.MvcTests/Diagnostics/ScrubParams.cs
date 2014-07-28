@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CodeConverters.Core.Diagnostics;
 using Xunit;
@@ -16,6 +17,17 @@ namespace CodeConverters.MvcTests.Diagnostics
             var newParams = LoggingConfig.DefaultScrubParams;
             Assert.NotEqual(originalParams, newParams);
             Assert.Contains(newParam, newParams);
+        }
+
+        [Fact]
+        public void DoesNotUpdateTheOriginalDictionary()
+        {
+            var original = new Dictionary<string, string> {{"password", "abc123"}};
+
+            var scrubbed = original.Scrub(LoggingConfig.DefaultScrubParams);
+            Assert.Equal("******", scrubbed["password"]);
+            Assert.Equal("abc123", original["password"]);
+
         }
     }
 }
