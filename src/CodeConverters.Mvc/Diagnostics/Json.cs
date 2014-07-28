@@ -1,4 +1,4 @@
-using System.IO;
+using System.Text;
 using System.Web;
 
 namespace CodeConverters.Mvc.Diagnostics
@@ -7,14 +7,11 @@ namespace CodeConverters.Mvc.Diagnostics
     {
         public static string GetPayload(HttpRequestBase request)
         {
-            string jsonString;
             request.InputStream.Position = 0;
-            using (var inputStream = new StreamReader(request.InputStream))
-            {
-                jsonString = inputStream.ReadToEnd();
-            }
+            var bytes = new byte[request.InputStream.Length];
+            request.InputStream.Read(bytes, 0, bytes.Length);
             request.InputStream.Position = 0;
-            return jsonString;
+            return Encoding.ASCII.GetString(bytes);
         }
     }
 }
