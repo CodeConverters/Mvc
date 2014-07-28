@@ -43,11 +43,12 @@ namespace CodeConverters.Core.Diagnostics
         /// Finds dictionary keys in the <see cref="scrubParams"/> list and replaces their values
         /// with asterisks. Key comparison is case insensitive.
         /// </summary>
-        /// <param name="dict"></param>
+         /// <param name="originalDictionary"></param>
         /// <param name="scrubParams"></param>
         /// <returns></returns>
-        public static IDictionary<string, string> Scrub(this IDictionary<string, string> dict, string[] scrubParams)
+        public static IDictionary<string, string> Scrub(this IDictionary<string, string> originalDictionary, string[] scrubParams)
         {
+            var dict = new Dictionary<string, string>(originalDictionary);
             if (dict == null || !dict.Any())
                 return dict;
 
