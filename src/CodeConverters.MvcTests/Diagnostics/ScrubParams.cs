@@ -12,7 +12,7 @@ namespace CodeConverters.MvcTests.Diagnostics
         {
             var newParam = Guid.NewGuid().ToString();
             var originalParams = LoggingConfig.DefaultScrubParams;
-            LoggingConfig.DefaultScrubParams = LoggingConfig.DefaultScrubParams.Concat(new []{ newParam}).ToArray();
+            LoggingConfig.DefaultScrubParams = LoggingConfig.DefaultScrubParams.Concat(new[] { newParam }).ToArray();
             var newParams = LoggingConfig.DefaultScrubParams;
             Assert.NotEqual(originalParams, newParams);
             Assert.Contains(newParam, newParams);

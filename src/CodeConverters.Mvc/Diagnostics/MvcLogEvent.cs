@@ -1,5 +1,7 @@
 ﻿using System.Collections.Specialized;
+using System.IO;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using CodeConverters.Core.Diagnostics;
 
@@ -14,6 +16,7 @@ namespace CodeConverters.Mvc.Diagnostics
         private readonly string _routeId = string.Empty;
         private readonly NameValueCollection _formCollection = new NameValueCollection();
         private readonly string _url;
+        private readonly string _jsonPayload;
 
         public MvcLogEvent(ActionExecutedContext filterContext)
         {
@@ -31,9 +34,15 @@ namespace CodeConverters.Mvc.Diagnostics
 
             if (filterContext.HttpContext.Request.Form != null)
                 _formCollection = filterContext.HttpContext.Request.Form;
+
+            if (filterContext.HttpContext.Request.Form != null)
+                _formCollection = filterContext.HttpContext.Request.Form;
+
+            if (filterContext.HttpContext.Request.ContentType == "application/json")
+                _jsonPayload = Json.GetPayload(filterContext.HttpContext.Request);
         }
 
-        public bool IsHttpGet
+       public bool IsHttpGet
         {
             get { return _httpMethod.ToLowerInvariant() == "get"; }
         }
@@ -51,7 +60,10 @@ namespace CodeConverters.Mvc.Diagnostics
                 logEvent.AppendFormat("RouteId={0}|", _routeId);
 
             if (_formCollection.HasKeys())
-                logEvent.AppendFormat("FormData={0}", _formCollection.Scrub().ToLogFormat());
+                logEvent.AppendFormat("FormData={0}|", _formCollection.Scrub().ToLogFormat());
+
+            if (!string.IsNullOrWhiteSpace(_jsonPayload))
+                logEvent.AppendFormat("JsonPayload={0}|", _jsonPayload.ScrubJson());
 
             return logEvent.ToString();
         }
