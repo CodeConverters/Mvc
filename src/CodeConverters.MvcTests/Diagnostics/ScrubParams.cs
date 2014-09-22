@@ -25,7 +25,7 @@ namespace CodeConverters.MvcTests.Diagnostics
             var original = new Dictionary<string, string> {{"password", "abc123"}};
 
             var scrubbed = original.Scrub(LoggingConfig.DefaultScrubParams);
-            Assert.Equal("******", scrubbed["password"]);
+            Assert.Equal("**********", scrubbed["password"]);
             Assert.Equal("abc123", original["password"]);
 
         }

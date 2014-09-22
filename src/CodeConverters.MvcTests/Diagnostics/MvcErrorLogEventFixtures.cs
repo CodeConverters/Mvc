@@ -26,13 +26,13 @@ namespace CodeConverters.MvcTests.Diagnostics
         public void LogsScrubbedHeaders()
         {
             var headers = _sut.ToString().Split('|').GetLogValue("Headers").Split(',').ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1]);
-            Assert.Equal(headers, new Dictionary<string, string> { { "header1", "value1" }, { "header2", "value2" }, { "secret", "*********" } });
+            Assert.Equal(headers, new Dictionary<string, string> { { "header1", "value1" }, { "header2", "value2" }, { "secret", "**********" } });
         }
         [Fact]
         public void LogsScrubbedFormData()
         {
             var formData = _sut.ToString().Split('|').GetLogValue("FormData").Split(',').ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1]);
-            Assert.Equal(formData, new Dictionary<string, string> { { "Form1", "valueA" }, { "form2", "valueB" }, { "password", "******" } });
+            Assert.Equal(formData, new Dictionary<string, string> { { "Form1", "valueA" }, { "form2", "valueB" }, { "password", "**********" } });
         }
     }
 }
