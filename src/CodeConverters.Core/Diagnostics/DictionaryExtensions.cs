@@ -43,7 +43,7 @@ namespace CodeConverters.Core.Diagnostics
         /// Finds dictionary keys in the <see cref="scrubParams"/> list and replaces their values
         /// with asterisks. Key comparison is case insensitive.
         /// </summary>
-         /// <param name="originalDictionary"></param>
+        /// <param name="originalDictionary"></param>
         /// <param name="scrubParams"></param>
         /// <returns></returns>
         public static IDictionary<string, string> Scrub(this IDictionary<string, string> originalDictionary, string[] scrubParams)
@@ -63,8 +63,7 @@ namespace CodeConverters.Core.Diagnostics
                 return dict;
             foreach (var key in itemsToUpdate)
             {
-                var len = dict[key] == null ? 8 : dict[key].Length;
-                dict[key] = new string('*', len);
+                dict[key] = "**********";
             }
             return dict;
         }
