@@ -48,7 +48,7 @@ namespace CodeConverters.Core.Diagnostics
                 };
 
             Log4NetConfiguration.InitialiseLog4Net(logAppenders);
-            ConfigureAzureDiagnostics(directories);
+          //  ConfigureAzureDiagnostics(directories);
 
             ConfigureLastResortExceptionHandling();
 
